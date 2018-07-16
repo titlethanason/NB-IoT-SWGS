@@ -4,7 +4,7 @@ var db = mongojs('iottest');
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var HOST = '0.0.0.0';
-var PORT = 80;
+var PORT = 4000;
 
 server.on("listening",function(){
     var address = server.address();

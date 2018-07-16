@@ -8,7 +8,7 @@ var PORT = 4000;
 
 server.on("listening",function(){
     var address = server.address();
-    console.log("Listening UDP on "+address.addres + " : "+ address.port);
+    console.log("Listening UDP on "+address.address + " : "+ address.port);
 });
 
 server.on("message",function(message,remote){

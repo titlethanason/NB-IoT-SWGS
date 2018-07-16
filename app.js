@@ -11,10 +11,7 @@ server.on("listening",function(){
 });
 
 server.on("message",function(message,remote){
-    console.log("Recieve request !!");
     console.log(remote.address + " : " + remote.port + " - " +message);
-    var strMessage = JSON.parse(message);
-    console.log("strMessage = "+strMessage);
 });
 
 server.on("error",function(err){

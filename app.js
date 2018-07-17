@@ -11,7 +11,7 @@ server.on("listening",function(){
 });
 
 server.on("message",function(message,remote){
-    console.log(remote.address + " : " + remote.port + " - " +message);
+    console.log(remote.address + ":" + remote.port + " - " +message);
 });
 
 server.on("error",function(err){

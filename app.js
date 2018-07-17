@@ -20,3 +20,15 @@ server.on("error",function(err){
 });
 
 server.bind(PORT);
+
+var express = require('express');
+var app = express();
+
+app.listen(8000,function(){
+    var startTime = new Date();
+    console.log('Server start at port : '+port+', '+startTime);
+});
+
+app.get('/',function(req,res){
+    res.send('Hello World!!');
+});

@@ -26,7 +26,7 @@ var app = express();
 
 app.listen(8000,function(){
     var startTime = new Date();
-    console.log('Server start at port : '+port+', '+startTime);
+    console.log('Server start at '+startTime);
 });
 
 app.get('/',function(req,res){

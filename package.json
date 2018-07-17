@@ -19,6 +19,7 @@
   "dependencies": {
     "dgram": "^1.0.1",
     "express": "^4.16.3",
+    "firebase-admin": "^5.12.1",
     "mongojs": "^2.6.0"
   }
 }

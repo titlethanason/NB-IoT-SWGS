@@ -1,6 +1,3 @@
-var mongojs = require('mongojs');
-var db = mongojs('iottest');
-
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
 var PORT_UDP = 4000;
@@ -11,6 +8,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://iotproject-210213.firebaseio.com"
 });
+var db = admin.database();
 
 server.on("listening",function(){
     var address = server.address();
@@ -35,6 +33,7 @@ var PORT_TCP = 8000;
 app.listen(PORT_TCP,function(){
     var startTime = new Date();
     console.log('Server start at '+startTime);
+    db.put("login_date", new Date());
 });
 
 app.get('/',function(req,res){

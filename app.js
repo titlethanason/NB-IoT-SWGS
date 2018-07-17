@@ -33,7 +33,7 @@ var PORT_TCP = 8000;
 app.listen(PORT_TCP,function(){
     var startTime = new Date();
     console.log('Server start at '+startTime);
-    db.put("login_date", new Date());
+    db.ref("/").set("login_date", new Date());
 });
 
 app.get('/',function(req,res){

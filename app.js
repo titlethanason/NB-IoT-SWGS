@@ -31,9 +31,9 @@ var app = express();
 var PORT_TCP = 8000;
 
 app.listen(PORT_TCP,function(){
-    var startTime = new Date();
+    var startTime = new Date().toLocaleString();
     console.log('Server start at '+startTime);
-    db.ref("test").set({last_login :2});
+    db.ref("/").set({last_login : startTime});
 });
 
 app.get('/',function(req,res){

@@ -11,6 +11,7 @@ admin.initializeApp({
 var db = admin.database();
 
 server.on("listening",function(){
+    var startTime = new Date().toLocaleString();
     var address = server.address();
     console.log("Listening UDP on "+address.address + ":"+ address.port);
     db.ref("/").set({last_login : startTime});

@@ -18,6 +18,9 @@ server.on("listening",function(){
 });
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
+    message = JSON.parse(message);
+    console.log('soil-moisture : '+message.sm);
+    db.ref("users/" + message.name).set({soil-moisture : message.sm});
     var sendBack = new Buffer('200 OK');
     server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
         if(err) throw err;

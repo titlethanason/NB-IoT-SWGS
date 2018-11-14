@@ -19,8 +19,6 @@ server.on("listening",function(){
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
-    data = JSON.stringify(data);
-    console.log(typeof data);
     data = JSON.parse(data);
     console.log(typeof data);
     console.log('soil-moisture : '+ data.sm);

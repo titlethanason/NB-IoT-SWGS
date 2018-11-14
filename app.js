@@ -18,13 +18,13 @@ server.on("listening",function(){
 });
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
-    message = message.toString('utf8');
-    message = JSON.stringify(message);
-    console.log(message);
-    message = JSON.parse(message);
-    console.log(message);
-    console.log('soil-moisture : '+ message.sm);
-    db.ref("users/" + message.name).set({"soil-moisture" : message.sm});
+    data = message.toString('utf8');
+    data = JSON.stringify(data);
+    console.log(data);
+    data = JSON.parse(data);
+    console.log(data);
+    console.log('soil-moisture : '+ data.sm);
+    db.ref("users/" + data.name).set({"soil-moisture" : data.sm});
     var sendBack = new Buffer('200 OK');
     server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
         if(err) throw err;

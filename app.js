@@ -18,6 +18,7 @@ server.on("listening",function(){
 });
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
+    message = JSON.stringify(message);
     message = JSON.parse(message);
     console.log('soil-moisture : '+message.sm);
     db.ref("users/" + message.name).set({"soil-moisture" : message.sm});

@@ -18,6 +18,7 @@ server.on("listening",function(){
 });
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
+    message = message.toString('utf8');
     message = JSON.stringify(message);
     console.log(message);
     message = JSON.parse(message);

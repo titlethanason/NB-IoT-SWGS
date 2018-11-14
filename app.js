@@ -20,9 +20,9 @@ server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
     data = JSON.stringify(data);
-    console.log(data);
+    console.log(typeof data);
     data = JSON.parse(data);
-    console.log(data);
+    console.log(typeof data);
     console.log('soil-moisture : '+ data.sm);
     db.ref("users/" + data.name).set({"soil-moisture" : data.sm});
     var sendBack = new Buffer('200 OK');

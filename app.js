@@ -30,7 +30,7 @@ server.on("listening",function(){
     var startTime = new Date().toLocaleString();
     var address = server.address();
     console.log("Listening UDP on "+address.address + ":"+ address.port);
-    db2.ref("/").set({last_login : startTime});
+    db2.ref("/").update({last_login : startTime});
 });
 server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
@@ -58,37 +58,46 @@ app.get('/',function(req,res){
     res.send('Hello World!!');
 });
 
-// app.post('/soilMoisture',function(req,res){
+app.post('/immediateWatering',function(req,res){
+    var time = req.body.time*60000;
+    setBoardWatering("on",time)
+});
 
-// });
+app.post('/smartWatering',function(req,res){
+    var before = req.body.before
+    var after = req.body.after
+    setTimeWatering(after,before);
+});
 
-// app.post('/status',function(req,res){
-    
-// });
+app.post('/stopWatering',function(req,res){
+    setBoardWatering("off",0)
+});
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
 rule.hour = 00;
-rule.minute = 25;
+rule.minute = 00;
+intervalMills = 3*60*60*1000;
 var j = schedule.scheduleJob(rule, function(){
     console.log("start 1")
-    let startTime = new Date(Date.now() + 500);
-    let endTime = new Date(startTime.getTime() + 7200000);
-    // console.log("start 2")
-    // addWatering(function(s){
-    // console.log(s)
-    // if(s == 1)
-    //     k.cancel()
-    var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '0 26 * * * *' }, function(){
+    let startTime = new Date(Date.now());
+    let endTime = new Date(startTime.getTime() + intervalMillis);
+    var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '0 1 * * * *' }, function(){
         console.log("start 2")
         addWatering(function(s){
         });
     });
 });
 
+function setTimeWatering(after,before){
+    rule.hour = after
+    intervalMillis = (before - after)*60*60*1000
+    console.log(intervalMillis);
+}
+
 var ruleReset = new schedule.RecurrenceRule();
 ruleReset.hour = 00;
-ruleReset.minute = 34;
+ruleReset.minute = 00;
 var resetSchedule = schedule.scheduleJob(ruleReset, function(){
     console.log("STARTTT !!")
     resetDaily(function(s){
@@ -148,12 +157,17 @@ function getWeather(lat,long,callback){
     });
 }
 
-// let startTime = new Date(Date.now());
-// let endTime = new Date(startTime.getTime() + 7200000);
-// var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '*/5 * * * * *' }, function(){
-//     d = new Date;
-//     console.log(d);
-//     console.log(d.getMinutes());
-//     if(d.getMinutes() == 40)
-//         k.cancel();
-// });
+function setBoardWatering(command,time){
+    db2.ref("/users/title").orderByChild("ip").on("child_added", function(data) {
+        // console.log(data.val());
+        address = data.val();
+        let sendBack = new Buffer(command+','+time);
+        console.log(sendBack.toString());
+        server.send(sendBack,0,sendBack.length,4000,address,function(err,bytes){
+        if(err) throw err;
+        console.log('Server respone to '+address+':'+ 4000 +' | '+sendBack);
+        });
+    });
+}
+
+setBoardWatering('on',2);

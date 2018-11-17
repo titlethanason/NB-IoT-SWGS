@@ -14,15 +14,18 @@ var admin = require("firebase-admin");
 var serviceAccount = require("./iotproject-210213-firebase-adminsdk-fxqnx-fc1a399120.json");
 var serviceAccount2 = require("./sgws-c9237-31348e7ff988.json")
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://iotproject-210213.firebaseio.com"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://iotproject-210213.firebaseio.com"
 });
 var db2 = admin.database();
 var other = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount2)
-  },'other');
+},'other');
 var db = other.firestore();
 
+admin.firestore().settings({
+    timestampsInSnapshots: true 
+})
 server.on("listening",function(){
     var startTime = new Date().toLocaleString();
     var address = server.address();
@@ -65,28 +68,68 @@ app.get('/',function(req,res){
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
-rule.hour = 3;
-rule.minute = 0;
-
+rule.hour = 00;
+rule.minute = 25;
 var j = schedule.scheduleJob(rule, function(){
+    console.log("start 1")
     let startTime = new Date(Date.now() + 500);
     let endTime = new Date(startTime.getTime() + 7200000);
-    var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '* */5 * * * *' }, function(){
-      console.log('Time for tea!');
+    // console.log("start 2")
+    // addWatering(function(s){
+    // console.log(s)
+    // if(s == 1)
+    //     k.cancel()
+    var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '0 26 * * * *' }, function(){
+        console.log("start 2")
+        addWatering(function(s){
+        });
     });
 });
 
-function addWatering (){
+var ruleReset = new schedule.RecurrenceRule();
+ruleReset.hour = 00;
+ruleReset.minute = 34;
+var resetSchedule = schedule.scheduleJob(ruleReset, function(){
+    console.log("STARTTT !!")
+    resetDaily(function(s){
+        console.log("all daily is reset")
+    })
+})
+
+function resetDaily (callback){
+    db.collection('garden').get()
+    .then((snapshot) => {
+        snapshot.forEach((doc) => {
+            db.collection('garden').doc(doc.id).update({daily: 0})
+        });
+    })
+    .catch((err) => {
+        console.log('Error getting documents', err);
+    }); 
+}
+
+function addWatering (callback){
     db.collection('garden').get()
     .then((snapshot) => {
         snapshot.forEach((doc) => {
             db.collection('garden').doc(doc.id).get().then((s) => {
-                let lat = s.data().location.lat
-                let long = s.data().location.long
-                getWeather(lat,long,function(s){
-                    let mois = Math.random() * 60 + 40
-                    db.collection('garden').doc(doc.id).update({watering: {time: new Date(), temp: s.temp, moisture: Math, status: 'Automatic'}});
-                })
+                console.log("start 1L")
+                if(s.data().daily == 0){
+                    console.log("start 2L")
+                    let lat = s.data().location.lat
+                    let long = s.data().location.long
+                    getWeather(lat,long,function(m){
+                        console.log("start 3L")
+                        if(m.weather != "Rain"){
+                            console.log("start 4L")                    
+                            let mois = Math.random() * 60 + 40
+                            db.collection('garden').doc(doc.id).update({watering: admin.firestore.FieldValue.arrayUnion({time: new Date(), temp: m.temp, moisture: mois, status: 'Smart Watering'}), daily: 1}).then(() => {
+                                console.log("start 5L")
+                                callback(1);
+                            });
+                        }
+                    })
+                }
             })
         });
     })
@@ -101,14 +144,16 @@ function getWeather(lat,long,callback){
         url: url,
         json: true
     }, function (error, response, body) {
-        //console.log(body.weather[0].main) // Print the json response
-        callback({'weather' : body.weather[0].main,'temp' : body.main.temp-272.15});
+        callback({'weather' : body.weather[0].main,'temp' : body.main.temp});
     });
 }
-// a = db.collection('garden').doc('K79fWANeCMfTDqVOTIts').get().then((s) => {
-//     console.log(s.data().location);
-// })
 
-getWeather(52.52000659999999,13.404953999999975,function(s){
-    console.log(s.temp);
-})
+// let startTime = new Date(Date.now());
+// let endTime = new Date(startTime.getTime() + 7200000);
+// var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '*/5 * * * * *' }, function(){
+//     d = new Date;
+//     console.log(d);
+//     console.log(d.getMinutes());
+//     if(d.getMinutes() == 40)
+//         k.cancel();
+// });

@@ -1,6 +1,8 @@
 var dgram = require('dgram');
+var bodyParser = require('body-parser');
 var server = dgram.createSocket('udp4');
 var PORT_UDP = 4000;
+app.use(bodyParser.urlencoded({extended: true}));
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./iotproject-210213-firebase-adminsdk-fxqnx-fc1a399120.json");
@@ -20,9 +22,7 @@ server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
     data = JSON.parse(data);
-    console.log(typeof data);
-    console.log('soil-moisture : '+ data.sm);
-    db.ref("users/" + data.name).set({"soil-moisture" : data.sm});
+    db.ref("users/" + data.name).set({"soil-moisture" : data.sm}); // name = gardenID
     var sendBack = new Buffer('200 OK');
     server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
         if(err) throw err;
@@ -47,3 +47,22 @@ app.listen(PORT_TCP,function(){
 app.get('/',function(req,res){
     res.send('Hello World!!');
 });
+
+// app.post('/soilMoisture',function(req,res){
+
+// });
+
+// app.post('/status',function(req,res){
+    
+// });
+
+var schedule = require('node-schedule');
+ 
+var rule = new schedule.RecurrenceRule();
+rule.hour = 17;
+rule.minute = 0;
+ 
+var j = schedule.scheduleJob(rule, function(){
+  console.log(j);
+});
+

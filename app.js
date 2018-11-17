@@ -2,7 +2,7 @@ var dgram = require('dgram');
 var bodyParser = require('body-parser');
 var server = dgram.createSocket('udp4');
 var PORT_UDP = 4000;
-app.use(bodyParser.urlencoded({extended: true}));
+server.use(bodyParser.urlencoded({extended: true}));
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./iotproject-210213-firebase-adminsdk-fxqnx-fc1a399120.json");

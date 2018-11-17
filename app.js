@@ -8,7 +8,6 @@ var express = require('express');
 var app = express();
 var PORT_TCP = 8000;
 app.use(bodyParser.urlencoded({extended: true}));
-var EventEmitter = require("events").EventEmitter;
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./iotproject-210213-firebase-adminsdk-fxqnx-fc1a399120.json");
@@ -59,6 +58,7 @@ app.get('/',function(req,res){
 });
 
 app.post('/immediateWatering',function(req,res){
+    console.log("YESSS");
     var time = req.body.time*60000;
     setBoardWatering("on",time)
 });

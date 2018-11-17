@@ -103,6 +103,8 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
     resetDaily(function(s){
         console.log("all daily is reset")
     })
+    rule.hour = 3
+    intervalMillis = 2*60*60*1000 
 })
 
 function resetDaily (callback){

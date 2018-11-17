@@ -2,7 +2,11 @@ var dgram = require('dgram');
 var bodyParser = require('body-parser');
 var server = dgram.createSocket('udp4');
 var PORT_UDP = 4000;
-server.use(bodyParser.urlencoded({extended: true}));
+
+var express = require('express');
+var app = express();
+var PORT_TCP = 8000;
+app.use(bodyParser.urlencoded({extended: true}));
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./iotproject-210213-firebase-adminsdk-fxqnx-fc1a399120.json");
@@ -35,10 +39,6 @@ server.on("error",function(err){
 });
 
 server.bind(PORT_UDP);
-
-var express = require('express');
-var app = express();
-var PORT_TCP = 8000;
 
 app.listen(PORT_TCP,function(){
     var startTime = new Date().toLocaleString();

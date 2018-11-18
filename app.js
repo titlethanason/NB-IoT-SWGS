@@ -167,9 +167,9 @@ function getWeather(lat,long,callback){
 }
 
 function setBoardWatering(command,time){
-    db2.ref("/users/title").orderByChild("ip").on("child_added", function(data) {
+    db2.ref("/users/title").orderByChild("ip").limitToFirst(1).on("child_added", function(data) {
         // console.log(data.val());
-        address = data.val();
+        let address = data.val();
         let sendBack = new Buffer(command+','+time);
         console.log(sendBack.toString());
         server.send(sendBack,0,sendBack.length,4000,address,function(err,bytes){

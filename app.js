@@ -93,7 +93,6 @@ var j = schedule.scheduleJob(rule, function(){
     });
 });
 
-
 var ruleReset = new schedule.RecurrenceRule();
 ruleReset.hour = 00;
 ruleReset.minute = 00;
@@ -105,6 +104,23 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
     rule.hour = 3
     intervalMillis = 2*60*60*1000 
 })
+
+var ruleCheck = new schedule.RecurrenceRule();
+ruleCheck.minute = 00;
+var resetSchedule = schedule.scheduleJob(ruleCheck, function(){
+    db.collection('garden').get().then((snapshot) =>{
+        const after = [];
+        const before = [];
+        snapshot.forEach(doc => {
+            db.collection('garden').doc(doc.id).get().then((data) => {
+                after.push(data.data().timeSet.after)
+                before.push(data.data().timeSet.before)
+            })
+        })
+        setTimeWatering(after[0],before[0]);
+    })
+});
+
 
 //function 
 

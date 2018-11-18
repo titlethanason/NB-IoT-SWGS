@@ -25,6 +25,7 @@ var db = other.firestore();
 admin.firestore().settings({
     timestampsInSnapshots: true 
 })
+
 server.on("listening",function(){
     var startTime = new Date().toLocaleString();
     var address = server.address();
@@ -35,7 +36,7 @@ server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
     data = JSON.parse(data);
-    db2.ref("users/" + data.name).set({"soil-moisture" : data.sm}); // name = gardenID
+    db2.ref("users/" + data.name).update({"soil-moisture" : data.sm, ip: remote.address}); // name = gardenID
     var sendBack = new Buffer('200 OK');
     server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
         if(err) throw err;
@@ -74,6 +75,8 @@ app.post('/stopWatering',function(req,res){
     setBoardWatering("off",0)
 });
 
+// settime 
+
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
 rule.hour = 00;
@@ -90,11 +93,6 @@ var j = schedule.scheduleJob(rule, function(){
     });
 });
 
-function setTimeWatering(after,before){
-    rule.hour = after
-    intervalMillis = (before - after)*60*60*1000
-    console.log(intervalMillis);
-}
 
 var ruleReset = new schedule.RecurrenceRule();
 ruleReset.hour = 00;
@@ -107,6 +105,14 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
     rule.hour = 3
     intervalMillis = 2*60*60*1000 
 })
+
+//function 
+
+function setTimeWatering(after,before){
+    rule.hour = after
+    intervalMillis = (before - after)*60*60*1000
+    console.log(intervalMillis);
+}
 
 function resetDaily (callback){
     db.collection('garden').get()
@@ -172,5 +178,3 @@ function setBoardWatering(command,time){
         });
     });
 }
-
-setBoardWatering('on',2);

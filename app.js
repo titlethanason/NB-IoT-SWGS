@@ -58,7 +58,7 @@ app.get('/',function(req,res){
 });
 
 app.post('/immediateWatering',function(req,res){
-    console.log("YESSS");
+    console.log(req.body);
     var time = req.body.time*60000;
     setBoardWatering("on",time)
 });

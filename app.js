@@ -61,6 +61,7 @@ app.post('/immediateWatering',function(req,res){
     console.log(req.body);
     var time = req.body.time*60000;
     setBoardWatering("on",time)
+    res.send("Malee Broke 1")
 });
 
 app.post('/smartWatering',function(req,res){

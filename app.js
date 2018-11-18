@@ -106,7 +106,7 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
 })
 
 var ruleCheck = new schedule.RecurrenceRule();
-ruleCheck.minute = 00;
+ruleCheck.minute = 59;
 var resetSchedule = schedule.scheduleJob(ruleCheck, function(){
     db.collection('garden').get().then((snapshot) =>{
         const after = [];

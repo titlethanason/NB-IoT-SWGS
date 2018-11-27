@@ -6,8 +6,6 @@ String serverIP = "35.225.63.230"; // Your Server IP
 String serverPort = "4000"; // Your Server Port
 
 String udpData = "{\"name\":\"title\",\"sm\":30}";
-String udpOn = "{\"name\":\"title\",\"sm\":on}";
-String udpOff = "{\"name\":\"title\",\"sm\":off}";
 
 AIS_NB_BC95 AISnb;
 
@@ -20,6 +18,7 @@ unsigned long until = 0;
 long cnt = 0;
 void setup()
 { 
+  pinMode(A5,OUTPUT);
   AISnb.debug = true;
   
   Serial.begin(9600);
@@ -35,25 +34,21 @@ void setup()
 }
 void loop()
 { 
-  if(millis() > until && now == "on"){
-    //Serial.println("now has changed");
-    now = "off";
-    UDPSend udpoff = AISnb.sendUDPmsgStr(serverIP, serverPort, udpOff);
+  if(millis() > until){
+      now = "off";
   }
+  if(now == "on")
+      digitalWrite(A5,LOW);
+  else
+      digitalWrite(A5,HIGH);
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval)
-    {
+  {   
       cnt++;     
-           
       // Send data in String 
       UDPSend udp = AISnb.sendUDPmsgStr(serverIP, serverPort, udpData);
-   
-      //Send data in HexString     
-      //udpDataHEX = AISnb.str2HexStr(udpData);
-      //UDPSend udp = AISnb.sendUDPmsg(serverIP, serverPort, udpDataHEX);
       previousMillis = currentMillis;
-  
-    }
+  }
   UDPReceive resp = AISnb.waitResponse();
   int count = 0;
   String command;
@@ -82,22 +77,19 @@ void loop()
       if(now != "on"){
         Serial.println("now is : "+now);
         now = "on";
-        UDPSend udpon = AISnb.sendUDPmsgStr(serverIP, serverPort, udpOn);
         until = millis()+timeMillis; 
         Serial.println("now is : "+now);
       }
     }
-    else{
+    else if(command == "off"){
       if(now != "off"){
         now = "off";
-        UDPSend udpoff2 = AISnb.sendUDPmsgStr(serverIP, serverPort, udpOff);
       }
     }
     Serial.print("millis: ");
     Serial.print(millis());
     Serial.print(", until: "); 
     Serial.println(until);
-    //
   } 
 }
 

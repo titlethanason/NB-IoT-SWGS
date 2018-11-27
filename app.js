@@ -37,18 +37,12 @@ server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
     data = JSON.parse(data);
-    if(data.sm == "on")
-        status = "on";
-    else if(data.sm == "off")
-        status = "off"
-    else{
-        db2.ref("users/" + data.name).update({"soil-moisture" : data.sm, ip: remote.address}); // name = gardenID
-        var sendBack = new Buffer('200 OK');
-        server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
-            if(err) throw err;
-            console.log('Server respone to '+remote.address+':'+remote.port+' | '+sendBack);
-        });
-    }
+    db2.ref("users/" + data.name).update({"soil-moisture" : data.sm, ip: remote.address}); // name = gardenID
+    var sendBack = new Buffer('200 OK');
+    server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
+        if(err) throw err;
+        console.log('Server respone to '+remote.address+':'+remote.port+' | '+sendBack);
+    });
 });
 server.on("error",function(err){
     console.log("server error : "+err);

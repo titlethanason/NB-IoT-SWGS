@@ -93,6 +93,7 @@ var j = schedule.scheduleJob(rule, function(){
     var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '0 1 * * * *' }, function(){
         console.log("start 2")
         addWatering(function(s){
+            console.log(s)
         });
     });
 });
@@ -109,21 +110,21 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
     intervalMillis = 2*60*60*1000 
 })
 
-var ruleCheck = new schedule.RecurrenceRule();
-ruleCheck.minute = 59;
-var resetSchedule = schedule.scheduleJob(ruleCheck, function(){
-    db.collection('garden').get().then((snapshot) =>{
-        const after = [];
-        const before = [];
-        snapshot.forEach(doc => {
-            db.collection('garden').doc(doc.id).get().then((data) => {
-                after.push(data.data().timeSet.after)
-                before.push(data.data().timeSet.before)
-            })
-        })
-        setTimeWatering(after[0],before[0]);
-    })
-});
+// var ruleCheck = new schedule.RecurrenceRule();
+// ruleCheck.minute = 59;
+// var resetSchedule = schedule.scheduleJob(ruleCheck, function(){
+//     db.collection('garden').get().then((snapshot) =>{
+//         const after = [];
+//         const before = [];
+//         snapshot.forEach(doc => {
+//             db.collection('garden').doc(doc.id).get().then((data) => {
+//                 after.push(data.data().timeSet.after)
+//                 before.push(data.data().timeSet.before)
+//             })
+//         })
+//         setTimeWatering(after[0],before[0]);
+//     })
+// });
 
 
 //function 
@@ -162,7 +163,7 @@ function addWatering (callback){
                             console.log("start 4L")                    
                             let mois = Math.random() * 60 + 40
                             db.collection('garden').doc(doc.id).update({watering: admin.firestore.FieldValue.arrayUnion({time: new Date(), temp: m.temp, moisture: mois, status: 'Smart Watering'}), daily: 1}).then(() => {
-                                console.log("start 5L")
+                                setBoardWatering("on",3*60*60*1000)
                                 callback(1);
                             });
                         }

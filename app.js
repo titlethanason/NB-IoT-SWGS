@@ -21,6 +21,7 @@ var other = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount2)
 },'other');
 var db = other.firestore();
+var status ;
 
 admin.firestore().settings({
     timestampsInSnapshots: true 
@@ -36,12 +37,18 @@ server.on("message",function(message,remote){
     console.log(remote.address + ":" + remote.port + " - " +message);
     data = message.toString('utf8');
     data = JSON.parse(data);
-    db2.ref("users/" + data.name).update({"soil-moisture" : data.sm, ip: remote.address}); // name = gardenID
-    var sendBack = new Buffer('200 OK');
-    server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
-        if(err) throw err;
-        console.log('Server respone to '+remote.address+':'+remote.port+' | '+sendBack);
-    });
+    if(data.sm == "on")
+        status = "on";
+    else if(data.sm == "off")
+        status = "off"
+    else{
+        db2.ref("users/" + data.name).update({"soil-moisture" : data.sm, ip: remote.address}); // name = gardenID
+        var sendBack = new Buffer('200 OK');
+        server.send(sendBack,0,sendBack.length,remote.port,remote.address,function(err,bytes){
+            if(err) throw err;
+            console.log('Server respone to '+remote.address+':'+remote.port+' | '+sendBack);
+        });
+    }
 });
 server.on("error",function(err){
     console.log("server error : "+err);
@@ -55,7 +62,7 @@ app.listen(PORT_TCP,function(){
     console.log('Server start at '+startTime);
 });
 app.get('/',function(req,res){
-    res.send('Hello World!!');
+    res.send("STATUS : "+status);
 });
 
 app.post('/immediateWatering',function(req,res){

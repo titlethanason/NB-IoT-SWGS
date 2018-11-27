@@ -67,6 +67,7 @@ app.post('/immediateWatering',function(req,res){
 });
 
 app.post('/smartWatering',function(req,res){
+    console.log(req.body);
     var before = req.body.before
     var after = req.body.after
     setTimeWatering(after,before);

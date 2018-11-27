@@ -21,7 +21,7 @@ var other = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount2)
 },'other');
 var db = other.firestore();
-var status ;
+var status = "off" ;
 
 admin.firestore().settings({
     timestampsInSnapshots: true 

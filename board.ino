@@ -38,9 +38,9 @@ void loop()
       now = "off";
   }
   if(now == "on")
-      digitalWrite(A5,LOW);
-  else
       digitalWrite(A5,HIGH);
+  else
+      digitalWrite(A5,LOW);
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval)
   {   

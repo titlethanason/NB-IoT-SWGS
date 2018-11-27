@@ -59,7 +59,7 @@ app.get('/',function(req,res){
 });
 
 app.post('/immediateWatering',function(req,res){
-    console.log(req.body);
+    //console.log(req.body);
     var time = req.body.time*60000;
     setBoardWatering("on",time)
     res.header("Access-Control-Allow-Origin", "*");
@@ -87,11 +87,9 @@ rule.hour = 00;
 rule.minute = 00;
 intervalMills = 3*60*60*1000;
 var j = schedule.scheduleJob(rule, function(){
-    console.log("start 1")
     let startTime = new Date(Date.now());
     let endTime = new Date(startTime.getTime() + intervalMillis);
     var k = schedule.scheduleJob({ start: startTime, end: endTime, rule: '0 1 * * * *' }, function(){
-        console.log("start 2")
         addWatering(function(s){
             console.log(s)
         });
@@ -102,7 +100,6 @@ var ruleReset = new schedule.RecurrenceRule();
 ruleReset.hour = 00;
 ruleReset.minute = 00;
 var resetSchedule = schedule.scheduleJob(ruleReset, function(){
-    console.log("STARTTT !!")
     resetDaily(function(s){
         console.log("all daily is reset")
     })
@@ -132,7 +129,7 @@ var resetSchedule = schedule.scheduleJob(ruleReset, function(){
 function setTimeWatering(after,before){
     rule.hour = after
     intervalMillis = (before - after)*60*60*1000
-    console.log(intervalMillis);
+    //console.log(intervalMillis);
 }
 
 function resetDaily (callback){
@@ -152,15 +149,11 @@ function addWatering (callback){
     .then((snapshot) => {
         snapshot.forEach((doc) => {
             db.collection('garden').doc(doc.id).get().then((s) => {
-                console.log("start 1L")
                 if(s.data().daily == 0){
-                    console.log("start 2L")
                     let lat = s.data().location.lat
                     let long = s.data().location.long
                     getWeather(lat,long,function(m){
-                        console.log("start 3L")
-                        if(m.weather != "Rain"){
-                            console.log("start 4L")                    
+                        if(m.weather != "Rain"){                  
                             let mois = Math.random() * 60 + 40
                             db.collection('garden').doc(doc.id).update({watering: admin.firestore.FieldValue.arrayUnion({time: new Date(), temp: m.temp, moisture: mois, status: 'Smart Watering'}), daily: 1}).then(() => {
                                 setBoardWatering("on",3*60*60*1000)
@@ -192,7 +185,7 @@ function setBoardWatering(command,time){
         // console.log(data.val());
         let address = data.val();
         let sendBack = new Buffer(command+','+time);
-        console.log(sendBack.toString());
+        //console.log(sendBack.toString());
         server.send(sendBack,0,sendBack.length,4000,address,function(err,bytes){
         if(err) throw err;
         console.log('Server respone to '+address+':'+ 4000 +' | '+sendBack);

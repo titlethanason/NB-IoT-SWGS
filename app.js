@@ -70,6 +70,9 @@ app.post('/smartWatering',function(req,res){
     var before = req.body.before
     var after = req.body.after
     setTimeWatering(after,before);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.send("Malee Broke 2")
+    console.log("after: "+after+", before: "+before)
 });
 
 app.post('/stopWatering',function(req,res){
